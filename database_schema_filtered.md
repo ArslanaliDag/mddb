@@ -1,13 +1,13 @@
 # 🧩 Структура БД, включая схемы, таблицы и функции.
 
 **СУБД:** PostgreSQL
-**Дата обновления:** 15-10-2025
+**Дата обновления:** 21-10-2025
 ---
 ## 📂 Список схем
 
 | Схема | Таблиц | Функций | Назначение |
 |--------|---------|----------|----------|
-| `policyregistry` | 12 | 44 | Голосование |
+| `policyregistry` | 14 | 45 | Голосование |
 | `public` | 10 | 107 | Общая |
 | `users_schema` | 3 | 24 | Пользователи |
 
@@ -21,9 +21,11 @@
 | context_attributes | Права для голосования. Те кто могут голосовать, управлять голосованием |
 | events | События связанные с голосованием |
 | options | Опции (варианты выбора) в голосовании |
-| platform_attributes | Общие права |
+| platform_attributes | Права доступа |
+| platform_attributes_audit | Логи действия с таблицей platform_attributes_audit |
 | user_context_attribute_assignments | Выданные права пользователю в голосовании |
 | user_platform_attribute_assignments | Общие права пользователя |
+| user_platform_attribute_assignments_audit | Логи действия с таблицей user_platform_attribute_assignments |
 | vote_session_settings | Параметры голосования |
 | vote_sessions | Голосования |
 | vote_sessions_comments | Комментарии в голосовании |
@@ -58,6 +60,8 @@
 | id | bigint | ❌ | nextval('policyregistry.events_id_seq'::regclass) | — |
 | created_at | timestamp without time zone | ✅ | now() | — |
 | json | jsonb | ✅ | — | — |
+| is_read | boolean | ✅ | false | Прочтено(отработано) уведомление или нет |
+| updated_at | timestamp with time zone | ✅ | now() | Дата обновления записи |
 
 #### `policyregistry.options`
 
@@ -76,6 +80,26 @@
 | description | text | ✅ | — | — |
 | preferences_json | jsonb | ✅ | — | — |
 
+#### `policyregistry.platform_attributes_audit`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| audit_id | bigint | ❌ | nextval('policyregistry.platform_attributes_audit_audit_id_seq'::regclass) | — |
+| platform_attribute_id | integer | ❌ | — | — |
+| title | text | ✅ | — | — |
+| description | text | ✅ | — | — |
+| preferences_json | jsonb | ✅ | — | — |
+| operation_type | text | ❌ | — | — |
+| performed_by_db_user | text | ❌ | CURRENT_USER | — |
+| application_name | text | ✅ | — | — |
+| client_ip | text | ✅ | — | — |
+| operation_timestamp | timestamp with time zone | ❌ | now() | — |
+| old_data | jsonb | ✅ | — | — |
+| new_data | jsonb | ✅ | — | — |
+| transaction_id | bigint | ✅ | txid_current() | — |
+| backend_pid | integer | ✅ | pg_backend_pid() | — |
+| app_user_id | bigint | ✅ | — | — |
+
 #### `policyregistry.user_context_attribute_assignments`
 
 | Поле | Тип | Nullable | Default | Описание |
@@ -91,6 +115,25 @@
 | user_id | bigint | ❌ | — | — |
 | platform_attribute_id | bigint | ❌ | — | — |
 | assigned_at | timestamp without time zone | ✅ | — | — |
+
+#### `policyregistry.user_platform_attribute_assignments_audit`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| audit_id | bigint | ❌ | nextval('policyregistry.user_platform_attribute_assignments_audit_audit_id_seq'::regclass) | — |
+| user_id | integer | ❌ | — | — |
+| platform_attribute_id | integer | ❌ | — | — |
+| assigned_at | timestamp without time zone | ❌ | now() | — |
+| operation_type | text | ❌ | — | — |
+| performed_by_db_user | text | ❌ | — | PostgreSQL роль |
+| application_name | text | ✅ | — | — |
+| client_ip | text | ❌ | — | — |
+| operation_timestamp | timestamp with time zone | ❌ | now() | — |
+| old_data | jsonb | ✅ | — | — |
+| new_data | jsonb | ✅ | — | — |
+| transaction_id | bigint | ✅ | txid_current() | — |
+| backend_pid | integer | ✅ | pg_backend_pid() | — |
+| app_user_id | bigint | ✅ | — | — |
 
 #### `policyregistry.vote_session_settings`
 
@@ -152,10 +195,10 @@
 —
 
 #### `policyregistry.assign_user_platform_attribute()` — возвращает `boolean`
-—
+Предоставить права доступа пользователю
 
 #### `policyregistry.create_platform_attribute_json()` — возвращает `text`
-—
+Создание прав доступа
 
 #### `policyregistry.create_vote_session_comments()` — возвращает `jsonb`
 Создает комментарий к голосованию с вложениями
@@ -170,10 +213,10 @@
 Удалить комментарий к голосованию вместе с вложениями
 
 #### `policyregistry.delete_platform_attribute()` — возвращает `boolean`
-Удаляет платформенный атрибут по ID
+Удаление прав доступа
 
 #### `policyregistry.delete_vote_session()` — возвращает `boolean`
-Удаление голосования
+Удаление голосования вместе со всеми задачами по голосованию в cron
 
 #### `policyregistry.exists_platform_attribute()` — возвращает `boolean`
 —
@@ -204,12 +247,6 @@
 
 #### `policyregistry.get_result_with_winner_response_json()` — возвращает `jsonb`
 Подсчет голосов по стратегиям выбора победителей голосования. Параметр стратегии выбора победителя не передается, вычисляется из таблицы policyregistry.vote_session_settings.data->>'ChoosingWinners'
-
-#### `policyregistry.get_result_with_winner_response_json_temp()` — возвращает `jsonb`
-Подсчет голосов по стратегиям выбора победителей голосования. Параметр стратегии выбора победителя передается текстом.
-
-#### `policyregistry.get_result_with_winner_response_json_temp2()` — возвращает `jsonb`
-—
 
 #### `policyregistry.get_user_context_attributes_json()` — возвращает `text`
 —
@@ -256,17 +293,26 @@
 #### `policyregistry.tg_cron_notify_vote_sessions_reminder()` — возвращает `trigger`
 Триггер-функция. Автоматически вызывается при создании или изменении голосования
 
+#### `policyregistry.tg_log_platform_attributes()` — возвращает `trigger`
+Триггер-функция. Логирование действий с таблицей platform_attributes
+
+#### `policyregistry.tg_log_user_platform_attribute_assignments()` — возвращает `trigger`
+Триггер-функция. Логирование действий с таблицей user_platform_attribute_assignments
+
 #### `policyregistry.tg_notify_vote_sessions()` — возвращает `trigger`
 Триггер-функция. Автоматически вызывается при обновлении поля state
 
+#### `policyregistry.tg_update_updated_at_column()` — возвращает `trigger`
+Генерация даты обновления поля updated_at
+
 #### `policyregistry.unassign_user_platform_attribute()` — возвращает `boolean`
-—
+Удаление прав у пользователя
 
 #### `policyregistry.update_comment_by_comment_id()` — возвращает `jsonb`
 Обновляет комментарий и его вложения в голосовании
 
 #### `policyregistry.update_platform_attribute_json()` — возвращает `boolean`
-—
+Обновление прав доступа
 
 #### `policyregistry.update_vote_session_simple_append()` — возвращает `jsonb`
 Обновление голосования
