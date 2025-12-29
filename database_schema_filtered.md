@@ -10,7 +10,6 @@
 | `audit` | 2 | 2 | Аудит |
 | `migrations` | 1 | 0 | Миграции |
 | `policyregistry` | 13 | 53 | Голосование |
-| `public` | 10 | 107 | Общая |
 | `users_schema` | 3 | 27 | Пользователи |
 
 ---
@@ -26,14 +25,14 @@
 
 | Поле | Тип | Nullable | Default | Описание |
 |------|-----|-----------|----------|-----------|
-| id | bigint | ❌ | — | — |
+| id | bigint | ❌ | — | ID |
 | platform_attribute_id | integer | ✅ | — | Права доступа |
-| title | text | ✅ | — | — |
+| title | text | ✅ | — | Название |
 | description | text | ✅ | — | Описание |
 | preferences_json | jsonb | ✅ | — | — |
 | operation_type | text | ❌ | — | Тип операции |
 | application_name | text | ✅ | — | Приложение |
-| operation_timestamp | timestamp with time zone | ❌ | now() | — |
+| operation_timestamp | timestamp with time zone | ❌ | now() | Дата |
 | old_data | jsonb | ✅ | — | Старые данные |
 | new_data | jsonb | ✅ | — | Новые данные |
 | app_user_id | bigint | ✅ | — | Пользователь |
@@ -42,13 +41,13 @@
 
 | Поле | Тип | Nullable | Default | Описание |
 |------|-----|-----------|----------|-----------|
-| id | bigint | ❌ | — | — |
-| user_id | integer | ❌ | — | — |
+| id | bigint | ❌ | — | ID |
+| user_id | integer | ❌ | — | Кому дали права |
 | platform_attribute_id | integer | ❌ | — | Права доступа |
-| assigned_at | timestamp without time zone | ❌ | now() | — |
+| assigned_at | timestamp without time zone | ❌ | now() | Дата |
 | operation_type | text | ❌ | — | Тип операции |
 | application_name | text | ✅ | — | Приложение |
-| operation_timestamp | timestamp with time zone | ❌ | now() | — |
+| operation_timestamp | timestamp with time zone | ❌ | now() | Дата |
 | old_data | jsonb | ✅ | — | Старые данные |
 | new_data | jsonb | ✅ | — | Новые данные |
 | app_user_id | bigint | ✅ | — | Пользователь |
@@ -73,14 +72,14 @@
 
 | Поле | Тип | Nullable | Default | Описание |
 |------|-----|-----------|----------|-----------|
-| id | integer | ❌ | nextval('migrations.db_migrations_id_seq'::regclass) | — |
-| migration_name | character varying | ❌ | — | — |
-| schema_name | character varying | ✅ | — | — |
-| applied_at | timestamp without time zone | ✅ | CURRENT_TIMESTAMP | — |
-| applied_by | character varying | ✅ | CURRENT_USER | — |
-| execution_time_ms | integer | ✅ | — | — |
-| notes | text | ✅ | — | — |
-| migration_type | character varying | ✅ | — | — |
+| id | integer | ❌ | nextval('migrations.db_migrations_id_seq'::regclass) | ID |
+| migration_name | character varying | ❌ | — | Название |
+| schema_name | character varying | ✅ | — | Схема |
+| applied_at | timestamp without time zone | ✅ | CURRENT_TIMESTAMP | Дата |
+| applied_by | character varying | ✅ | CURRENT_USER | Пользователь |
+| execution_time_ms | integer | ✅ | — | Время выполнения |
+| notes | text | ✅ | — | Примечание |
+| migration_type | character varying | ✅ | — | Тип |
 
 ### ⚙️ Функции схемы `migrations`
 
@@ -95,7 +94,7 @@ _(нет функций)_
 | comment_attachments | Вложения (файлы) у комментариев |
 | context_attributes | Права для голосования. Те кто могут голосовать, управлять голосованием |
 | events | События связанные с голосованием |
-| invites | — |
+| invites | Ссылка-приглашение для голосования |
 | options | Опции (варианты выбора) в голосовании |
 | platform_attributes | Права доступа (права Трибуны, права только для сервиса голосований) |
 | user_context_attribute_assignments | Выданные права пользователю в голосовании (добавленные пользователи к голосованияю) |
@@ -110,17 +109,17 @@ _(нет функций)_
 
 | Поле | Тип | Nullable | Default | Описание |
 |------|-----|-----------|----------|-----------|
-| id | bigint | ❌ | nextval('policyregistry.comment_attachments_id_seq'::regclass) | — |
+| id | bigint | ❌ | nextval('policyregistry.comment_attachments_id_seq'::regclass) | ID |
 | comment_id | bigint | ❌ | — | Комментарий |
 | file_url | text | ❌ | — | Ссылка |
 | file_name | text | ❌ | — | Имя файла |
-| created_at | timestamp without time zone | ✅ | now() | — |
+| created_at | timestamp without time zone | ✅ | now() | Дата |
 
 #### `policyregistry.context_attributes`
 
 | Поле | Тип | Nullable | Default | Описание |
 |------|-----|-----------|----------|-----------|
-| id | bigint | ❌ | — | — |
+| id | bigint | ❌ | — | ID |
 | platform_attribute_id | bigint | ✅ | — | Права доступа |
 | vote_session_id | bigint | ✅ | — | Голосование |
 | title | character varying | ✅ | — | Название |
@@ -131,8 +130,8 @@ _(нет функций)_
 
 | Поле | Тип | Nullable | Default | Описание |
 |------|-----|-----------|----------|-----------|
-| id | bigint | ❌ | nextval('policyregistry.events_id_seq'::regclass) | — |
-| created_at | timestamp without time zone | ✅ | now() | — |
+| id | bigint | ❌ | nextval('policyregistry.events_id_seq'::regclass) | ID |
+| created_at | timestamp without time zone | ✅ | now() | Дата |
 | json | jsonb | ✅ | — | Настройки |
 | is_read | boolean | ✅ | false | Прочтено(отработано) уведомление или нет |
 | updated_at | timestamp with time zone | ✅ | now() | Дата обновления записи |
@@ -142,7 +141,7 @@ _(нет функций)_
 
 | Поле | Тип | Nullable | Default | Описание |
 |------|-----|-----------|----------|-----------|
-| id | bigint | ❌ | — | — |
+| id | bigint | ❌ | — | ID |
 | vote_session_id | bigint | ❌ | — | Голосование |
 | token | character varying | ❌ | — | Уникальная строка для построения ссылки |
 | invited_by_id | bigint | ❌ | — | ID пользователя, который создал инвайт (внешний ключ на users_schema.users.id) |
@@ -150,8 +149,8 @@ _(нет функций)_
 | max_uses | integer | ❌ | 1 | Максимальное количество использований инвайта |
 | uses_count | integer | ❌ | 0 | Текущее количество использований инвайта |
 | expires_at | timestamp without time zone | ✅ | — | Время окончания срока действия инвайта |
-| created_at | timestamp without time zone | ✅ | now() | — |
-| updated_at | timestamp without time zone | ✅ | now() | — |
+| created_at | timestamp without time zone | ✅ | now() | Дата |
+| updated_at | timestamp without time zone | ✅ | now() | Дата обновления |
 | invited_users_id | ARRAY | ✅ | '{}'::bigint[] | Массив ID пользователей, использовавших инвайт |
 | enabled | boolean | ❌ | true | Флаг активности инвайта (true - активен, false - отключен) |
 
@@ -161,13 +160,13 @@ _(нет функций)_
 |------|-----|-----------|----------|-----------|
 | title | character varying | ✅ | — | Название |
 | vote_session_id | bigint | ❌ | — | Голосование |
-| id | integer | ❌ | — | — |
+| id | integer | ❌ | — | ID |
 
 #### `policyregistry.platform_attributes`
 
 | Поле | Тип | Nullable | Default | Описание |
 |------|-----|-----------|----------|-----------|
-| id | bigint | ❌ | — | — |
+| id | bigint | ❌ | — | ID |
 | title | character varying | ✅ | — | Название |
 | description | text | ✅ | — | Описание |
 | preferences_json | jsonb | ✅ | — | Настройки |
@@ -178,7 +177,7 @@ _(нет функций)_
 |------|-----|-----------|----------|-----------|
 | user_id | bigint | ❌ | — | Пользователь |
 | context_attribute_id | bigint | ❌ | — | Право голосования |
-| assigned_at | timestamp without time zone | ✅ | — | — |
+| assigned_at | timestamp without time zone | ✅ | — | ID |
 
 #### `policyregistry.user_platform_attribute_assignments`
 
@@ -186,7 +185,7 @@ _(нет функций)_
 |------|-----|-----------|----------|-----------|
 | user_id | bigint | ❌ | — | Пользователь |
 | platform_attribute_id | bigint | ❌ | — | Права |
-| assigned_at | timestamp without time zone | ✅ | now() | — |
+| assigned_at | timestamp without time zone | ✅ | now() | ID |
 
 #### `policyregistry.vote_session_settings`
 
@@ -199,13 +198,13 @@ _(нет функций)_
 
 | Поле | Тип | Nullable | Default | Описание |
 |------|-----|-----------|----------|-----------|
-| id | bigint | ❌ | — | — |
+| id | bigint | ❌ | — | ID |
 | date_start | timestamp without time zone | ✅ | — | Дата начала |
 | date_end | timestamp without time zone | ✅ | — | Дата конца |
 | title | character varying | ✅ | — | Название |
 | description | character varying | ✅ | — | Описание |
 | type_config | jsonb | ✅ | — | Конфигурация |
-| created_at | timestamp without time zone | ✅ | — | — |
+| created_at | timestamp without time zone | ✅ | — | Дата |
 | owner_id | bigint | ✅ | — | Владелец |
 | type | integer | ✅ | — | Тип голосования |
 | state | integer | ✅ | 0 | Статус |
@@ -215,12 +214,12 @@ _(нет функций)_
 
 | Поле | Тип | Nullable | Default | Описание |
 |------|-----|-----------|----------|-----------|
-| id | bigint | ❌ | nextval('policyregistry.vote_sessions_comments_id_seq'::regclass) | — |
+| id | bigint | ❌ | nextval('policyregistry.vote_sessions_comments_id_seq'::regclass) | ID |
 | vote_session_id | bigint | ✅ | — | Голосование |
 | user_id | bigint | ✅ | — | Пользователь |
 | description | text | ✅ | — | Описание |
-| created_at | timestamp without time zone | ✅ | now() | — |
-| updated_at | timestamp without time zone | ✅ | now() | — |
+| created_at | timestamp without time zone | ✅ | now() | Дата |
+| updated_at | timestamp without time zone | ✅ | now() | Дата обновления |
 
 #### `policyregistry.vote_to_option`
 
@@ -229,7 +228,7 @@ _(нет функций)_
 | option_id | integer | ❌ | — | Вариант в голосовании |
 | weight | numeric | ✅ | — | Вес |
 | vote_session_id | bigint | ❌ | — | Голосование |
-| vote_id | character varying | ❌ | — | — |
+| vote_id | character varying | ❌ | — | ID |
 
 #### `policyregistry.votes`
 
@@ -237,8 +236,8 @@ _(нет функций)_
 |------|-----|-----------|----------|-----------|
 | user_id | bigint | ❌ | — | Пользоватлеь |
 | vote_session_id | bigint | ❌ | — | Голосование |
-| id | character varying | ❌ | — | — |
-| created_at | timestamp with time zone | ✅ | — | — |
+| id | character varying | ❌ | — | ID |
+| created_at | timestamp with time zone | ✅ | — | Дата |
 
 ### ⚙️ Функции схемы `policyregistry`
 
@@ -351,13 +350,13 @@ _(нет функций)_
 Получить результаты голосования
 
 #### `policyregistry.is_user_platform_attribute_assigned()` — возвращает `boolean`
-—
+Назначены ли пользователю те или иные права
 
 #### `policyregistry.list_sessions_with_scores_by_session_window()` — возвращает `jsonb`
-—
+Возвращает список голосования за заданный период времени вместе с итоговыми баллами по опциям
 
 #### `policyregistry.list_sessions_with_votes_by_vote_time()` — возвращает `jsonb`
-—
+Возвращает список голосования за заданный период времени и для каждой — все голоса пользователей (по одному последнему голосу на пользователя) в виде JSONB.  В отличие от list_sessions_with_scores_by_session_window предыдущей функции (где считались итоговые баллы), здесь возвращаются сырые голоса.
 
 #### `policyregistry.notify_vote_sessions()` — возвращает `void`
 Сохраняет в events информацию о голосовании и отправляет уведомления
@@ -396,494 +395,10 @@ _(нет функций)_
 Проверка голосовал ли пользователь или нет (через votes)
 
 #### `policyregistry.vote_id_hash()` — возвращает `text`
-—
+Для автоматического формирования идентификатора голоса (id) на основе пользователя и сессии голосования
 
 #### `policyregistry.votes_set_id()` — возвращает `trigger`
-—
-
----
-## 📂 Схема: `public`
-
-### Таблицы схемы `public`
-| Таблица | Назначение |
-|----------|-------------|
-| backups | Задание резервирования базы |
-| databases | База данных |
-| destinations | — |
-| executions | — |
-| goose_db_version | — |
-| restorations | — |
-| sessions | — |
-| users | Пользователи БД |
-| webhook_executions | — |
-| webhooks | — |
-
-#### `public.backups`
-
-| Поле | Тип | Nullable | Default | Описание |
-|------|-----|-----------|----------|-----------|
-| id | uuid | ❌ | uuid_generate_v4() | — |
-| database_id | uuid | ❌ | — | — |
-| destination_id | uuid | ✅ | — | — |
-| name | text | ❌ | — | — |
-| cron_expression | text | ❌ | — | — |
-| time_zone | text | ❌ | — | — |
-| is_active | boolean | ❌ | false | — |
-| dest_dir | text | ❌ | — | — |
-| retention_days | smallint | ❌ | 0 | — |
-| opt_data_only | boolean | ❌ | false | — |
-| opt_schema_only | boolean | ❌ | false | — |
-| opt_clean | boolean | ❌ | false | — |
-| opt_if_exists | boolean | ❌ | false | — |
-| opt_create | boolean | ❌ | false | — |
-| opt_no_comments | boolean | ❌ | false | — |
-| created_at | timestamp with time zone | ❌ | now() | — |
-| updated_at | timestamp with time zone | ✅ | — | — |
-| is_local | boolean | ❌ | false | — |
-
-#### `public.databases`
-
-| Поле | Тип | Nullable | Default | Описание |
-|------|-----|-----------|----------|-----------|
-| id | uuid | ❌ | uuid_generate_v4() | — |
-| name | text | ❌ | — | — |
-| connection_string | bytea | ❌ | — | — |
-| pg_version | text | ❌ | — | — |
-| created_at | timestamp with time zone | ❌ | now() | — |
-| updated_at | timestamp with time zone | ✅ | — | — |
-| test_ok | boolean | ✅ | — | — |
-| test_error | text | ✅ | — | — |
-| last_test_at | timestamp with time zone | ✅ | — | — |
-
-#### `public.destinations`
-
-| Поле | Тип | Nullable | Default | Описание |
-|------|-----|-----------|----------|-----------|
-| id | uuid | ❌ | uuid_generate_v4() | — |
-| name | text | ❌ | — | — |
-| bucket_name | text | ❌ | — | — |
-| access_key | bytea | ❌ | — | — |
-| secret_key | bytea | ❌ | — | — |
-| region | text | ❌ | — | — |
-| endpoint | text | ❌ | — | — |
-| created_at | timestamp with time zone | ❌ | now() | — |
-| updated_at | timestamp with time zone | ✅ | — | — |
-| test_ok | boolean | ✅ | — | — |
-| test_error | text | ✅ | — | — |
-| last_test_at | timestamp with time zone | ✅ | — | — |
-
-#### `public.executions`
-
-| Поле | Тип | Nullable | Default | Описание |
-|------|-----|-----------|----------|-----------|
-| id | uuid | ❌ | uuid_generate_v4() | — |
-| backup_id | uuid | ❌ | — | — |
-| status | text | ❌ | 'running'::text | — |
-| message | text | ✅ | — | — |
-| path | text | ✅ | — | — |
-| started_at | timestamp with time zone | ❌ | now() | — |
-| updated_at | timestamp with time zone | ✅ | — | — |
-| finished_at | timestamp with time zone | ✅ | — | — |
-| deleted_at | timestamp with time zone | ✅ | — | — |
-| file_size | bigint | ✅ | — | — |
-
-#### `public.goose_db_version`
-
-| Поле | Тип | Nullable | Default | Описание |
-|------|-----|-----------|----------|-----------|
-| id | integer | ❌ | — | — |
-| version_id | bigint | ❌ | — | — |
-| is_applied | boolean | ❌ | — | — |
-| tstamp | timestamp without time zone | ❌ | now() | — |
-
-#### `public.restorations`
-
-| Поле | Тип | Nullable | Default | Описание |
-|------|-----|-----------|----------|-----------|
-| id | uuid | ❌ | uuid_generate_v4() | — |
-| execution_id | uuid | ❌ | — | — |
-| database_id | uuid | ✅ | — | — |
-| status | text | ❌ | 'running'::text | — |
-| message | text | ✅ | — | — |
-| started_at | timestamp with time zone | ❌ | now() | — |
-| updated_at | timestamp with time zone | ✅ | — | — |
-| finished_at | timestamp with time zone | ✅ | — | — |
-
-#### `public.sessions`
-
-| Поле | Тип | Nullable | Default | Описание |
-|------|-----|-----------|----------|-----------|
-| id | uuid | ❌ | uuid_generate_v4() | — |
-| user_id | uuid | ❌ | — | — |
-| token | bytea | ❌ | — | — |
-| ip | text | ❌ | — | — |
-| user_agent | text | ❌ | — | — |
-| created_at | timestamp with time zone | ❌ | now() | — |
-
-#### `public.users`
-
-| Поле | Тип | Nullable | Default | Описание |
-|------|-----|-----------|----------|-----------|
-| id | uuid | ❌ | uuid_generate_v4() | — |
-| name | text | ❌ | — | — |
-| email | text | ❌ | — | — |
-| password | text | ❌ | — | — |
-| created_at | timestamp with time zone | ❌ | now() | — |
-| updated_at | timestamp with time zone | ✅ | — | — |
-
-#### `public.webhook_executions`
-
-| Поле | Тип | Nullable | Default | Описание |
-|------|-----|-----------|----------|-----------|
-| id | uuid | ❌ | uuid_generate_v4() | — |
-| webhook_id | uuid | ❌ | — | — |
-| req_method | text | ✅ | — | — |
-| req_headers | text | ✅ | — | — |
-| req_body | text | ✅ | — | — |
-| res_status | smallint | ✅ | — | — |
-| res_headers | text | ✅ | — | — |
-| res_body | text | ✅ | — | — |
-| res_duration | integer | ✅ | — | — |
-| created_at | timestamp with time zone | ❌ | now() | — |
-
-#### `public.webhooks`
-
-| Поле | Тип | Nullable | Default | Описание |
-|------|-----|-----------|----------|-----------|
-| id | uuid | ❌ | uuid_generate_v4() | — |
-| name | text | ❌ | — | — |
-| is_active | boolean | ❌ | false | — |
-| event_type | text | ❌ | — | — |
-| target_ids | ARRAY | ❌ | — | — |
-| url | text | ❌ | — | — |
-| method | text | ❌ | — | — |
-| headers | text | ✅ | — | — |
-| body | text | ✅ | — | — |
-| created_at | timestamp with time zone | ❌ | now() | — |
-| updated_at | timestamp with time zone | ✅ | — | — |
-
-### ⚙️ Функции схемы `public`
-
-#### `public.akeys()` — возвращает `text[]`
-—
-
-#### `public.armor()` — возвращает `text`
-—
-
-#### `public.armor()` — возвращает `text`
-—
-
-#### `public.avals()` — возвращает `text[]`
-—
-
-#### `public.change_updated_at()` — возвращает `trigger`
-—
-
-#### `public.crypt()` — возвращает `text`
-—
-
-#### `public.dearmor()` — возвращает `bytea`
-—
-
-#### `public.decrypt()` — возвращает `bytea`
-—
-
-#### `public.decrypt_iv()` — возвращает `bytea`
-—
-
-#### `public.defined()` — возвращает `boolean`
-—
-
-#### `public.delete()` — возвращает `hstore`
-—
-
-#### `public.delete()` — возвращает `hstore`
-—
-
-#### `public.delete()` — возвращает `hstore`
-—
-
-#### `public.digest()` — возвращает `bytea`
-—
-
-#### `public.digest()` — возвращает `bytea`
-—
-
-#### `public.each()` — возвращает `SETOF record`
-—
-
-#### `public.encrypt()` — возвращает `bytea`
-—
-
-#### `public.encrypt_iv()` — возвращает `bytea`
-—
-
-#### `public.exist()` — возвращает `boolean`
-—
-
-#### `public.exists_all()` — возвращает `boolean`
-—
-
-#### `public.exists_any()` — возвращает `boolean`
-—
-
-#### `public.fetchval()` — возвращает `text`
-—
-
-#### `public.gen_random_bytes()` — возвращает `bytea`
-—
-
-#### `public.gen_random_uuid()` — возвращает `uuid`
-—
-
-#### `public.gen_salt()` — возвращает `text`
-—
-
-#### `public.gen_salt()` — возвращает `text`
-—
-
-#### `public.ghstore_compress()` — возвращает `internal`
-—
-
-#### `public.ghstore_consistent()` — возвращает `boolean`
-—
-
-#### `public.ghstore_decompress()` — возвращает `internal`
-—
-
-#### `public.ghstore_in()` — возвращает `ghstore`
-—
-
-#### `public.ghstore_options()` — возвращает `void`
-—
-
-#### `public.ghstore_out()` — возвращает `cstring`
-—
-
-#### `public.ghstore_penalty()` — возвращает `internal`
-—
-
-#### `public.ghstore_picksplit()` — возвращает `internal`
-—
-
-#### `public.ghstore_same()` — возвращает `internal`
-—
-
-#### `public.ghstore_union()` — возвращает `ghstore`
-—
-
-#### `public.gin_consistent_hstore()` — возвращает `boolean`
-—
-
-#### `public.gin_extract_hstore()` — возвращает `internal`
-—
-
-#### `public.gin_extract_hstore_query()` — возвращает `internal`
-—
-
-#### `public.hmac()` — возвращает `bytea`
-—
-
-#### `public.hmac()` — возвращает `bytea`
-—
-
-#### `public.hs_concat()` — возвращает `hstore`
-—
-
-#### `public.hs_contained()` — возвращает `boolean`
-—
-
-#### `public.hs_contains()` — возвращает `boolean`
-—
-
-#### `public.hstore()` — возвращает `hstore`
-—
-
-#### `public.hstore()` — возвращает `hstore`
-—
-
-#### `public.hstore()` — возвращает `hstore`
-—
-
-#### `public.hstore()` — возвращает `hstore`
-—
-
-#### `public.hstore_cmp()` — возвращает `integer`
-—
-
-#### `public.hstore_eq()` — возвращает `boolean`
-—
-
-#### `public.hstore_ge()` — возвращает `boolean`
-—
-
-#### `public.hstore_gt()` — возвращает `boolean`
-—
-
-#### `public.hstore_hash()` — возвращает `integer`
-—
-
-#### `public.hstore_hash_extended()` — возвращает `bigint`
-—
-
-#### `public.hstore_in()` — возвращает `hstore`
-—
-
-#### `public.hstore_le()` — возвращает `boolean`
-—
-
-#### `public.hstore_lt()` — возвращает `boolean`
-—
-
-#### `public.hstore_ne()` — возвращает `boolean`
-—
-
-#### `public.hstore_out()` — возвращает `cstring`
-—
-
-#### `public.hstore_recv()` — возвращает `hstore`
-—
-
-#### `public.hstore_send()` — возвращает `bytea`
-—
-
-#### `public.hstore_subscript_handler()` — возвращает `internal`
-—
-
-#### `public.hstore_to_array()` — возвращает `text[]`
-—
-
-#### `public.hstore_to_json()` — возвращает `json`
-—
-
-#### `public.hstore_to_json_loose()` — возвращает `json`
-—
-
-#### `public.hstore_to_jsonb()` — возвращает `jsonb`
-—
-
-#### `public.hstore_to_jsonb_loose()` — возвращает `jsonb`
-—
-
-#### `public.hstore_to_matrix()` — возвращает `text[]`
-—
-
-#### `public.hstore_version_diag()` — возвращает `integer`
-—
-
-#### `public.isdefined()` — возвращает `boolean`
-—
-
-#### `public.isexists()` — возвращает `boolean`
-—
-
-#### `public.pgp_armor_headers()` — возвращает `SETOF record`
-—
-
-#### `public.pgp_key_id()` — возвращает `text`
-—
-
-#### `public.pgp_pub_decrypt()` — возвращает `text`
-—
-
-#### `public.pgp_pub_decrypt()` — возвращает `text`
-—
-
-#### `public.pgp_pub_decrypt()` — возвращает `text`
-—
-
-#### `public.pgp_pub_decrypt_bytea()` — возвращает `bytea`
-—
-
-#### `public.pgp_pub_decrypt_bytea()` — возвращает `bytea`
-—
-
-#### `public.pgp_pub_decrypt_bytea()` — возвращает `bytea`
-—
-
-#### `public.pgp_pub_encrypt()` — возвращает `bytea`
-—
-
-#### `public.pgp_pub_encrypt()` — возвращает `bytea`
-—
-
-#### `public.pgp_pub_encrypt_bytea()` — возвращает `bytea`
-—
-
-#### `public.pgp_pub_encrypt_bytea()` — возвращает `bytea`
-—
-
-#### `public.pgp_sym_decrypt()` — возвращает `text`
-—
-
-#### `public.pgp_sym_decrypt()` — возвращает `text`
-—
-
-#### `public.pgp_sym_decrypt_bytea()` — возвращает `bytea`
-—
-
-#### `public.pgp_sym_decrypt_bytea()` — возвращает `bytea`
-—
-
-#### `public.pgp_sym_encrypt()` — возвращает `bytea`
-—
-
-#### `public.pgp_sym_encrypt()` — возвращает `bytea`
-—
-
-#### `public.pgp_sym_encrypt_bytea()` — возвращает `bytea`
-—
-
-#### `public.pgp_sym_encrypt_bytea()` — возвращает `bytea`
-—
-
-#### `public.populate_record()` — возвращает `anyelement`
-—
-
-#### `public.skeys()` — возвращает `SETOF text`
-—
-
-#### `public.slice()` — возвращает `hstore`
-—
-
-#### `public.slice_array()` — возвращает `text[]`
-—
-
-#### `public.svals()` — возвращает `SETOF text`
-—
-
-#### `public.tconvert()` — возвращает `hstore`
-—
-
-#### `public.uuid_generate_v1()` — возвращает `uuid`
-—
-
-#### `public.uuid_generate_v1mc()` — возвращает `uuid`
-—
-
-#### `public.uuid_generate_v3()` — возвращает `uuid`
-—
-
-#### `public.uuid_generate_v4()` — возвращает `uuid`
-—
-
-#### `public.uuid_generate_v5()` — возвращает `uuid`
-—
-
-#### `public.uuid_nil()` — возвращает `uuid`
-—
-
-#### `public.uuid_ns_dns()` — возвращает `uuid`
-—
-
-#### `public.uuid_ns_oid()` — возвращает `uuid`
-—
-
-#### `public.uuid_ns_url()` — возвращает `uuid`
-—
-
-#### `public.uuid_ns_x500()` — возвращает `uuid`
-—
+Для автоматического формирования идентификатора голоса (id) на основе пользователя и сессии голосования
 
 ---
 ## 📂 Схема: `users_schema`
@@ -995,7 +510,7 @@ _(нет функций)_
 Проверяет есть ли у пользователя те или иные глобальные права
 
 #### `users_schema.sp_assign_team_attributes()` — возвращает `None`
-—
+Cоздаёт атрибуты команд, если их ещё нет и назначает эти атрибуты пользователям, сопоставляя их по имени и фамилии. Работает идемпотентно — повторный запуск не создаёт дублей
 
 #### `users_schema.unassign_user_global_attribute()` — возвращает `boolean`
 Забрать права у пользователя

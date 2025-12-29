@@ -20,13 +20,14 @@ DB_CONFIG = {
     "password": "",
 }
 
-TARGET_SCHEMAS = ["audit", "migrations", "policyregistry", "public", "users_schema"]
+TARGET_SCHEMAS = ["audit", "migrations", "policyregistry", "users_schema"]
 
 SCHEMA_DESCRIPTIONS = {
     "audit": "Аудит",
+    "cron": "Планировщик",
     "migrations": "Миграции",
     "policyregistry": "Голосование",
-    "public": "Общая",
+    "public": "Общая (Для DevOps-сов)",
     "users_schema": "Пользователи",
 }
 
