@@ -13,11 +13,11 @@ from datetime import datetime
 OUTPUT_FILE = Path("database_schema_filtered.md")
 
 DB_CONFIG = {
-    "host": "ops-prod-argocd.imbalanced.tech",
+    "host": "tech",
     "port": 5432,
-    "dbname": "ops",
-    "user": "ops",
-    "password": "ops",
+    "dbname": "",
+    "user": "",
+    "password": "",
 }
 
 TARGET_SCHEMAS = ["audit", "migrations", "policyregistry", "users_schema"]
