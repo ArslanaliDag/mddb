@@ -13,11 +13,11 @@ from datetime import datetime
 OUTPUT_FILE = Path("database_schema_filtered.md")
 
 DB_CONFIG = {
-    "host": "tech",
+    "host": "ops-prod-argocd.imbalanced.tech",
     "port": 5432,
-    "dbname": "",
-    "user": "",
-    "password": "",
+    "dbname": "ops",
+    "user": "ops",
+    "password": "ops",
 }
 
 TARGET_SCHEMAS = ["audit", "migrations", "policyregistry", "users_schema"]
@@ -109,6 +109,19 @@ def generate_md():
         "",
         "**СУБД:** PostgreSQL",
         f"**Дата обновления:** {now}",
+        "",
+        "---",
+        "",
+        "## 📚 Аудит голосований",
+        "",
+        "- [Информация по аудиту](vote-sessions-audit.md)",
+        "",
+        "---",
+        "",
+        "## 🗄️ Миграции БД",
+        "",
+        "- [Файлы миграций](Migrations/Success)",
+        "",
         "---",
     ]
 
