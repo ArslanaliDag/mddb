@@ -1,7 +1,7 @@
 # 🧩 Структура БД, включая схемы, таблицы и функции.
 
 **СУБД:** PostgreSQL
-**Дата обновления:** 25-01-2026
+**Дата обновления:** 28-01-2026
 
 ---
 
@@ -26,9 +26,9 @@
 
 | Схема | Таблиц | Функций | Назначение |
 |--------|---------|----------|----------|
-| `audit` | 2 | 2 | Аудит |
+| `audit` | 16 | 21 | Аудит |
 | `migrations` | 1 | 0 | Миграции |
-| `policyregistry` | 13 | 53 | Голосование |
+| `policyregistry` | 15 | 61 | Голосование |
 | `users_schema` | 3 | 27 | Пользователи |
 
 ---
@@ -37,8 +37,58 @@
 ### Таблицы схемы `audit`
 | Таблица | Назначение |
 |----------|-------------|
+| context_attributes_audit | Журналирование прав голосований |
+| invites_audit | Журналирование приглашенных в голосование |
+| options_audit | Журналирование вариантов выбора голосований |
 | platform_attributes_audit | Журналирование прав доступа |
 | user_platform_attribute_assignments_audit | Журналирование общих прав доступа |
+| v_invite_user_joined | Определяет присоединившихся к голосованию участников |
+| v_user_vote_changes | Определяет изменения голоса пользователя во времени |
+| v_user_votes | Формирует факты голосования пользователей (одна строка = один выбор) |
+| v_vote_results | Агрегированные результаты голосования |
+| v_vote_session_events | Унифицированное представление всех audit-событий, относящихся к голосованию |
+| v_vote_sessions_state_changes | Выделяет бизнес-значимые переходы состояний голосования |
+| vote_business_events | Бизнес действия журналирования |
+| vote_session_settings_audit | Журналирование настроек голосований |
+| vote_sessions_audit | Журналирование голосований |
+| vote_to_option_audit | Журналирование результатов голосования |
+| votes_audit | Журналирование проголосовавших |
+
+#### `audit.context_attributes_audit`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| id | bigint | ❌ | — | — |
+| operation_type | text | ❌ | — | — |
+| app_user_id | bigint | ✅ | — | — |
+| application_name | text | ✅ | — | — |
+| operation_timestamp | timestamp with time zone | ❌ | now() | — |
+| old_data | jsonb | ✅ | — | — |
+| new_data | jsonb | ✅ | — | — |
+
+#### `audit.invites_audit`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| id | bigint | ❌ | — | — |
+| operation_type | text | ❌ | — | — |
+| app_user_id | bigint | ✅ | — | — |
+| application_name | text | ✅ | — | — |
+| operation_timestamp | timestamp with time zone | ❌ | now() | — |
+| old_data | jsonb | ✅ | — | — |
+| new_data | jsonb | ✅ | — | — |
+
+#### `audit.options_audit`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| id | bigint | ❌ | — | — |
+| operation_type | text | ❌ | — | — |
+| app_user_id | bigint | ✅ | — | — |
+| application_name | text | ✅ | — | — |
+| operation_timestamp | timestamp with time zone | ❌ | now() | — |
+| old_data | jsonb | ✅ | — | — |
+| new_data | jsonb | ✅ | — | — |
 
 #### `audit.platform_attributes_audit`
 
@@ -71,13 +121,189 @@
 | new_data | jsonb | ✅ | — | Новые данные |
 | app_user_id | bigint | ✅ | — | Пользователь |
 
+#### `audit.v_invite_user_joined`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| vote_session_id | bigint | ✅ | — | — |
+| operation_timestamp | timestamp with time zone | ✅ | — | — |
+| joined_user_id | bigint | ✅ | — | — |
+
+#### `audit.v_user_vote_changes`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| vote_session_id | bigint | ✅ | — | — |
+| app_user_id | bigint | ✅ | — | — |
+| operation_timestamp | timestamp with time zone | ✅ | — | — |
+| old_option_id | text | ✅ | — | — |
+| new_option_id | text | ✅ | — | — |
+
+#### `audit.v_user_votes`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| vote_session_id | bigint | ✅ | — | — |
+| app_user_id | bigint | ✅ | — | — |
+| operation_timestamp | timestamp with time zone | ✅ | — | — |
+| option_id | text | ✅ | — | — |
+
+#### `audit.v_vote_results`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| vote_session_id | bigint | ✅ | — | — |
+| option_id | integer | ✅ | — | — |
+| option_title | character varying | ✅ | — | — |
+| votes_count | bigint | ✅ | — | — |
+
+#### `audit.v_vote_session_events`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| entity_type | text | ✅ | — | — |
+| entity_id | bigint | ✅ | — | — |
+| vote_session_id | bigint | ✅ | — | — |
+| action | text | ✅ | — | — |
+| old_data | jsonb | ✅ | — | — |
+| new_data | jsonb | ✅ | — | — |
+| app_user_id | bigint | ✅ | — | — |
+| operation_timestamp | timestamp with time zone | ✅ | — | — |
+
+#### `audit.v_vote_sessions_state_changes`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| audit_id | bigint | ✅ | — | — |
+| vote_session_id | bigint | ✅ | — | — |
+| event_type | text | ✅ | — | — |
+| event_timestamp | timestamp with time zone | ✅ | — | — |
+| app_user_id | bigint | ✅ | — | — |
+| payload | jsonb | ✅ | — | — |
+
+#### `audit.vote_business_events`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| id | bigint | ❌ | nextval('audit.vote_business_events_id_seq'::regclass) | — |
+| vote_session_id | bigint | ❌ | — | — |
+| event_type | text | ❌ | — | — |
+| event_timestamp | timestamp with time zone | ❌ | — | — |
+| app_user_id | bigint | ✅ | — | — |
+| payload | jsonb | ❌ | — | — |
+
+#### `audit.vote_session_settings_audit`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| id | bigint | ❌ | — | — |
+| operation_type | text | ❌ | — | — |
+| app_user_id | bigint | ✅ | — | — |
+| application_name | text | ✅ | — | — |
+| operation_timestamp | timestamp with time zone | ❌ | now() | — |
+| old_data | jsonb | ✅ | — | — |
+| new_data | jsonb | ✅ | — | — |
+
+#### `audit.vote_sessions_audit`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| id | bigint | ❌ | — | — |
+| operation_type | text | ❌ | — | — |
+| app_user_id | bigint | ✅ | — | — |
+| application_name | text | ✅ | — | — |
+| operation_timestamp | timestamp with time zone | ❌ | now() | — |
+| old_data | jsonb | ✅ | — | — |
+| new_data | jsonb | ✅ | — | — |
+
+#### `audit.vote_to_option_audit`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| id | bigint | ❌ | — | — |
+| operation_type | text | ❌ | — | — |
+| app_user_id | bigint | ✅ | — | — |
+| application_name | text | ✅ | — | — |
+| operation_timestamp | timestamp with time zone | ❌ | now() | — |
+| old_data | jsonb | ✅ | — | — |
+| new_data | jsonb | ✅ | — | — |
+
+#### `audit.votes_audit`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| id | bigint | ❌ | — | — |
+| operation_type | text | ❌ | — | — |
+| app_user_id | bigint | ✅ | — | — |
+| application_name | text | ✅ | — | — |
+| operation_timestamp | timestamp with time zone | ❌ | now() | — |
+| old_data | jsonb | ✅ | — | — |
+| new_data | jsonb | ✅ | — | — |
+
 ### ⚙️ Функции схемы `audit`
+
+#### `audit.fill_vote_business_events()` — возвращает `void`
+Детерминированно пересобирает бизнес-журнал голосования на основе audit-логов
+
+#### `audit.get_app_user_id()` — возвращает `bigint`
+Получает пользоателя сделавшего действие
+
+#### `audit.get_vote_sessions_business_markdown()` — возвращает `text`
+Формирует человекочитаемый Markdown-журнал голосования для голосования
+
+#### `audit.get_vote_sessions_full_markdown_log()` — возвращает `text`
+Формирует Markdown-журнал полного аудита голосования (для админов)
+
+#### `audit.human_action()` — возвращает `text`
+Преобразует технические CRUD-действия в человекочитаемый вид
+
+#### `audit.human_business_event()` — возвращает `text`
+Преобразует машинные бизнес-события в человекочитаемый текст
+
+#### `audit.human_entity()` — возвращает `text`
+Преобразует технические имена сущностей в бизнес-термины
+
+#### `audit.human_field_name()` — возвращает `text`
+Человеческие названия полей для логов изменений
+
+#### `audit.jsonb_diff()` — возвращает `TABLE(old_values jsonb, new_values jsonb)`
+Определяет разницу между двумя JSONB объектами
+
+#### `audit.resolve_field_value()` — возвращает `text`
+Преобразует сырые значения полей в бизнес-читаемый формат
+
+#### `audit.set_app_user_id()` — возвращает `void`
+Устанавливает пользоателя сделавшего действие
+
+#### `audit.tg_log_context_attributes()` — возвращает `trigger`
+Триггер-функция действий над правами для голосования
+
+#### `audit.tg_log_invites()` — возвращает `trigger`
+Триггер-функция действий над присоединениями к голосованию
+
+#### `audit.tg_log_options()` — возвращает `trigger`
+Триггер-функция действий над вариантами голосования
 
 #### `audit.tg_log_platform_attributes()` — возвращает `trigger`
 Триггер-функция журналирование прав доступа
 
 #### `audit.tg_log_user_platform_attribute_assignments()` — возвращает `trigger`
 Триггер-функция журналирование общих прав доступа
+
+#### `audit.tg_log_vote_session_settings()` — возвращает `trigger`
+Триггер-функция действий над настройками голосования
+
+#### `audit.tg_log_vote_sessions()` — возвращает `trigger`
+Триггер-функция действий над самим голосованием
+
+#### `audit.tg_log_vote_to_option()` — возвращает `trigger`
+Триггер-функция действий над выборами голосующих
+
+#### `audit.tg_log_votes()` — возвращает `trigger`
+Триггер-функция действий над голосами
+
+#### `audit.tg_on_vote_finished()` — возвращает `trigger`
+Триггер-функция действий для завершением голосования
 
 ---
 ## 📂 Схема: `migrations`
@@ -116,11 +342,13 @@ _(нет функций)_
 | invites | Ссылка-приглашение для голосования |
 | options | Опции (варианты выбора) в голосовании |
 | platform_attributes | Права доступа (права Трибуны, права только для сервиса голосований) |
+| structural_tags | Справочник структурных тегов |
 | user_context_attribute_assignments | Выданные права пользователю в голосовании (добавленные пользователи к голосованияю) |
 | user_platform_attribute_assignments | Общие права пользователя |
 | vote_session_settings | Параметры голосования |
 | vote_sessions | Голосования |
 | vote_sessions_comments | Комментарии в голосовании |
+| vote_sessions_structural_tags | Связующая таблица между голосованиями и структурными тегами |
 | vote_to_option | Результаты голосования |
 | votes | Все кто проголосовал |
 
@@ -190,6 +418,16 @@ _(нет функций)_
 | description | text | ✅ | — | Описание |
 | preferences_json | jsonb | ✅ | — | Настройки |
 
+#### `policyregistry.structural_tags`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| id | bigint | ❌ | — | — |
+| title | character varying | ❌ | — | Название структурного тега |
+| is_deleted | boolean | ❌ | false | Флаг soft-delete |
+| created_at | timestamp with time zone | ❌ | now() | Дата создания тега |
+| link | character varying | ✅ | — | Ссылка на иконку команды (берется из s3 Шивы) |
+
 #### `policyregistry.user_context_attribute_assignments`
 
 | Поле | Тип | Nullable | Default | Описание |
@@ -240,6 +478,15 @@ _(нет функций)_
 | created_at | timestamp without time zone | ✅ | now() | Дата |
 | updated_at | timestamp without time zone | ✅ | now() | Дата обновления |
 
+#### `policyregistry.vote_sessions_structural_tags`
+
+| Поле | Тип | Nullable | Default | Описание |
+|------|-----|-----------|----------|-----------|
+| id | bigint | ❌ | — | — |
+| vote_session_id | bigint | ❌ | — | ID голосования |
+| structural_tag_id | bigint | ❌ | — | ID структурного тега |
+| created_at | timestamp with time zone | ❌ | now() | Дата привязки тега к голосованию |
+
 #### `policyregistry.vote_to_option`
 
 | Поле | Тип | Nullable | Default | Описание |
@@ -269,6 +516,9 @@ _(нет функций)_
 #### `policyregistry.create_platform_attribute_json()` — возвращает `text`
 Создание прав доступа
 
+#### `policyregistry.create_structural_tag()` — возвращает `jsonb`
+Теги голосования
+
 #### `policyregistry.create_vote_session_comments()` — возвращает `jsonb`
 Создает комментарий к голосованию с вложениями
 
@@ -290,11 +540,17 @@ _(нет функций)_
 #### `policyregistry.delete_platform_attribute()` — возвращает `boolean`
 Удаление прав доступа
 
+#### `policyregistry.delete_structural_tag()` — возвращает `boolean`
+Деактивация структурного тега(soft-delete)
+
 #### `policyregistry.delete_vote_session()` — возвращает `boolean`
 Удаление голосования вместе со всеми задачами по голосованию в cron
 
 #### `policyregistry.delete_vote_session_invite()` — возвращает `boolean`
 Деактивировать инвайт к голосованию
+
+#### `policyregistry.exist_create_shiva_task()` — возвращает `boolean`
+Проверяет установлен ли парамет создания задачи в Шиве после завершения голосования
 
 #### `policyregistry.exist_global_notify()` — возвращает `boolean`
 Проверяет значение GlobalNotify - уведомлять ли голосующих или нет
@@ -307,6 +563,15 @@ _(нет функций)_
 
 #### `policyregistry.fetch_and_delete_event()` — возвращает `json`
 Пометить уведомление как прочтенное
+
+#### `policyregistry.force_start_vote_session()` — возвращает `boolean`
+Принудительный старт голосования
+
+#### `policyregistry.force_stop_vote_session()` — возвращает `boolean`
+Принудительнай остановка голосования
+
+#### `policyregistry.generate_structural_tag_code()` — возвращает `character varying`
+Генерация транслита из русских символов в латиницу
 
 #### `policyregistry.get_all_platform_attributes_json()` — возвращает `text`
 Получить все прав доступа
@@ -328,6 +593,9 @@ _(нет функций)_
 
 #### `policyregistry.get_result_with_winner_response_json()` — возвращает `jsonb`
 Подсчет голосов по стратегиям выбора победителей голосования. Параметр стратегии выбора победителя не передается, вычисляется из таблицы policyregistry.vote_session_settings.data->>'ChoosingWinners'
+
+#### `policyregistry.get_structural_tags()` — возвращает `jsonb`
+Получить все структурные теги голосования
 
 #### `policyregistry.get_user_context_attributes_json()` — возвращает `text`
 Получить выданные права пользователя в голосовании
@@ -378,7 +646,7 @@ _(нет функций)_
 Возвращает список голосования за заданный период времени и для каждой — все голоса пользователей (по одному последнему голосу на пользователя) в виде JSONB.  В отличие от list_sessions_with_scores_by_session_window предыдущей функции (где считались итоговые баллы), здесь возвращаются сырые голоса.
 
 #### `policyregistry.notify_vote_sessions()` — возвращает `void`
-Сохраняет в events информацию о голосовании и отправляет уведомления
+Сохраняет в events информацию о голосовании и отправляет уведомление
 
 #### `policyregistry.notify_vote_sessions_reminder()` — возвращает `void`
 Создает уведомления для напоминания всем участникам голосования за определенное время (час) до конца голосования
@@ -400,6 +668,9 @@ _(нет функций)_
 
 #### `policyregistry.update_platform_attribute_json()` — возвращает `boolean`
 Обновление прав доступа
+
+#### `policyregistry.update_structural_tag()` — возвращает `jsonb`
+Обновление структурного тега голосования
 
 #### `policyregistry.update_vote_session_invite()` — возвращает `jsonb`
 Обновление приглашения к голосованию
@@ -437,6 +708,7 @@ _(нет функций)_
 | title | character varying | ✅ | — | Название |
 | description | text | ✅ | — | Описание |
 | preferences_json | jsonb | ✅ | — | Настройки |
+| shiva_id | bigint | ✅ | 0 | Айди Шивы (idTeam) |
 
 #### `users_schema.user_global_attribute_assignments`
 
@@ -462,6 +734,7 @@ _(нет функций)_
 | avatar | bytea | ✅ | — | Аватарка |
 | last_login_time | timestamp with time zone | ✅ | — | Дата и время последнего входа в систему пользователем |
 | notify_data | jsonb | ✅ | '{"Email": 0, "Discord": 1, "Telegram": 0}'::jsonb | Куда уведомлять пользователя |
+| avatar_s3 | character varying | ✅ | — | Ссылка на аватарку пользователя в s3 |
 
 ### ⚙️ Функции схемы `users_schema`
 
