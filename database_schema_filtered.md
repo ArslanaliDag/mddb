@@ -29,7 +29,7 @@
 | `audit` | 16 | 21 | Аудит |
 | `migrations` | 1 | 0 | Миграции |
 | `policyregistry` | 15 | 61 | Голосование |
-| `users_schema` | 3 | 27 | Пользователи |
+| `users_schema` | 3 | 28 | Пользователи |
 
 ---
 ## 📂 Схема: `audit`
@@ -794,6 +794,9 @@ _(нет функций)_
 
 #### `users_schema.get_user_global_attributes_json()` — возвращает `jsonb`
 Получить глобальные права пользователя
+
+#### `users_schema.get_user_ids_by_discords()` — возвращает `jsonb`
+Получает пользовательские айди по дискорду
 
 #### `users_schema.get_user_json()` — возвращает `jsonb`
 Получить пользователя
