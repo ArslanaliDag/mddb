@@ -25,6 +25,7 @@ TARGET_SCHEMAS = ["audit", "migrations", "policyregistry", "users_schema"]
 SCHEMA_DESCRIPTIONS = {
     "audit": "Аудит",
     "cron": "Планировщик",
+    "meritfund": "Меритократия (Меритфонд)",
     "migrations": "Миграции",
     "policyregistry": "Голосование",
     "public": "Общая (Для DevOps-сов)",

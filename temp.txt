@@ -1,0 +1,2 @@
+pip freeze > req.txt
+pip install -r req.txt
