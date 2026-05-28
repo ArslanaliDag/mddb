@@ -11,9 +11,11 @@
 
 ---
 
-## 🗄️ Миграции
+## 🗄️ Файлы миграций схем
 
-- [Файлы миграций](Migrations/Success)
+- [audit](migrations/audit)
+- [meritfund](migrations/meritfund)
+- [policyregistry](migrations/policyregistry)
 
 ---
 
@@ -30,6 +32,22 @@
 | `migrations` | 1 | 0 | Миграции |
 | `policyregistry` | 15 | 61 | Голосование |
 | `users_schema` | 3 | 28 | Пользователи |
+
+## 📋 Регламент 
+
+- [Работа с базами данных](https://git.imbalanced.tech/government/agreements-policies-regulations/-/blob/main/guidelines/%D0%A0%D0%B5%D0%B3%D0%BB%D0%B0%D0%BC%D0%B5%D0%BD%D1%82_%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B8_%D0%91%D0%94.md)
+- Именование сущностей баз данных (в разработке)
+
+---
+## 🖥️ Мониторинг производительности 
+
+- [pgBadger](monitor/pgbadger.md)
+- [pgStatStatements](monitor/pgstatstatements.md)
+
+---
+## 🗄️ Резервное копирование 
+
+- [pgBackWeb](backup/pgbackweb.md)
 
 ---
 ## 📂 Схема: `audit`

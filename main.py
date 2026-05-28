@@ -1,26 +1,34 @@
-# file: generate_filtered_schema_md.py
-"""
-Генератор Markdown-документации по структуре PostgreSQL (фильтр по схемам).
-Извлекает таблицы, поля, функции и комментарии (включая комментарии к колонкам).
-Схемы: policyregistry, users_schema, public.
-"""
-
+import os
 import psycopg2
 from psycopg2 import sql
 from pathlib import Path
 from datetime import datetime
+from dotenv import load_dotenv
 
-OUTPUT_FILE = Path("database_schema_filtered.md")
 
+# Загрузить переменные окружения из .env (если файл существует)
+load_dotenv()
+
+OUTPUT_FILE = Path("database.md")
+
+# Конфигурация БД берётся из переменных окружения.
+# Ожидаемые переменные: DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
 DB_CONFIG = {
-    "host": "tech",
-    "port": 5432,
-    "dbname": "",
-    "user": "",
-    "password": "",
+    "host": os.getenv("DB_HOST", "host"),
+    "port": int(os.getenv("DB_PORT", 5432)),
+    "dbname": os.getenv("DB_NAME", ""),
+    "user": os.getenv("DB_USER", ""),
+    "password": os.getenv("DB_PASSWORD", ""),
 }
 
-TARGET_SCHEMAS = ["audit", "migrations", "policyregistry", "users_schema"]
+TARGET_SCHEMAS = [
+    "audit", 
+    "cron", 
+    "meritfund", 
+    "migrations", 
+    "policyregistry", 
+    "users_schema"
+]
 
 SCHEMA_DESCRIPTIONS = {
     "audit": "Аудит",
@@ -106,7 +114,7 @@ def generate_md():
     now = datetime.now().strftime("%d-%m-%Y")
 
     lines = [
-        "# 🧩 Структура БД, включая схемы, таблицы и функции.",
+        "# 🧩 Структура БД: схемы, таблицы, функции.",
         "",
         "**СУБД:** PostgreSQL",
         f"**Дата обновления:** {now}",
@@ -119,9 +127,11 @@ def generate_md():
         "",
         "---",
         "",
-        "## 🗄️ Миграции",
+        "## 🗄️ Файлы миграций схем",
         "",
-        "- [Файлы миграций](Migrations/Success)",
+        "- [audit](migrations/audit)",
+        "- [meritfund](migrations/meritfund)",
+        "- [policyregistry](migrations/policyregistry)",
         "",
         "---",
         "",
@@ -149,6 +159,28 @@ def generate_md():
         lines.append(f"| `{schema}` | {len(stats['tables'])} | {len(stats['functions'])} | {desc} |")
 
     lines.append("\n---")
+
+    # Дополнительные разделы: регламент, мониторинг, бэкапы
+    lines.append("")
+    lines.append("## 📋 Регламент ")
+    lines.append("")
+    lines.append("- [Работа с базами данных](https://git.imbalanced.tech/government/agreements-policies-regulations/-/blob/main/guidelines/%D0%A0%D0%B5%D0%B3%D0%BB%D0%B0%D0%BC%D0%B5%D0%BD%D1%82_%D1%80%D0%B0%D0%B7%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%BA%D0%B8_%D0%91%D0%94.md)")
+    lines.append("- Именование сущностей баз данных (в разработке)")
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+    lines.append("## 🖥️ Мониторинг производительности ")
+    lines.append("")
+    lines.append("- [pgBadger](monitor/pgbadger.md)")
+    lines.append("- [pgStatStatements](monitor/pgstatstatements.md)")
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+    lines.append("## 🗄️ Резервное копирование ")
+    lines.append("")
+    lines.append("- [pgBackWeb](backup/pgbackweb.md)")
+    lines.append("")
+    lines.append("---")
 
     # --- Детализация схем ---
     for schema in TARGET_SCHEMAS:
