@@ -1,6 +1,6 @@
 # 🧩 PostgreSQL Schema → Markdown Generator
 
-Скрипт автоматически извлекает **структуру PostgreSQL базы данных** и формирует подробную Markdown-документацию (`database_schema.md`).
+Скрипт автоматически извлекает **структуру PostgreSQL базы данных** и формирует подробную Markdown-документацию (`database.md`).
 
 Документация включает:
 - ✅ список схем с количеством таблиц и функций;
@@ -17,27 +17,25 @@
 
 | Схема | Таблиц | Функций | Назначение |
 |--------|---------|----------|-------------|
-| `policyregistry` | 9 | 33 | Голосование |
 | `public` | 10 | 107 | Общие таблицы |
-| `users_schema` | 3 | 24 | Пользователи |
 
 ---
 
-### 📂 Схема: `policyregistry`
+### 📂 Схема: `public`
 
-#### Таблицы схемы `policyregistry`
+#### Таблицы схемы `public`
 
 | Таблица | Назначение |
 |----------|-------------|
-| [comment_attachments](#policyregistrycommentattachments) | Вложения (файлы) у комментариев |
-| [vote_sessions](#policyregistryvotesessions) | Голосования |
-| [votes](#policyregistryvotes) | Все кто проголосовал |
+| [comment](#publiccomment) | Вложения у комментариев |
+| [sessions](#publicsessions) | Голосования |
+| [votes](#publicvotes) | Все кто проголосовал |
 
-#### `policyregistry.comment_attachments`
+#### `public.comment`
 
 | Поле | Тип | Nullable | Default | Описание |
 |------|-----|-----------|----------|-----------|
-| id | bigint | ❌ | nextval('policyregistry.comment_attachments_id_seq'::regclass) | Идентификатор |
+| id | bigint | ❌ | nextval('public.comment_id_seq'::regclass) | Идентификатор |
 | comment_id | bigint | ❌ | — | Комментарий |
 | file_url | text | ❌ | — | Ссылка на файл |
 | file_name | text | ❌ | — | Имя файла |
