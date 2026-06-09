@@ -47,8 +47,33 @@
 
 - Подключается к PostgreSQL с использованием `psycopg2`;
 - Извлекает только нужные схемы (например, `policyregistry`, `public`, `users_schema`);
+- Поддерживает отдельные описания окружений `prod` и `stage` с разными подключениями и списками схем;
 - Сохраняет Markdown с кликабельными якорями;
 - Добавляет комментарии к таблицам, полям и функциям;
 - Поддерживает PostgreSQL 12+.
 
 ---
+
+## 🔧 Настройка окружений
+
+`prod` остаётся совместимым с текущими переменными `DB_*`. Список схем прода задаётся через `PROD_DB_SCHEMAS`; если переменная не указана, используется список по умолчанию из `main.py`.
+
+`stage` описывается отдельно через `STAGE_DB_*` и `STAGE_DB_SCHEMAS`. В `STAGE_DB_SCHEMAS` указывайте только те схемы, которые нужно добавить в документацию со стейджа:
+
+```env
+DB_HOST=prod-db.example.local
+DB_PORT=5432
+DB_NAME=ops
+DB_USER=ops
+DB_PASSWORD=change-me
+PROD_DB_SCHEMAS=audit,cron,meritfund,migrations,policyregistry,users_schema
+
+STAGE_DB_HOST=stage-db.example.local
+STAGE_DB_PORT=5432
+STAGE_DB_NAME=ops
+STAGE_DB_USER=ops
+STAGE_DB_PASSWORD=change-me
+STAGE_DB_SCHEMAS=public,users_schema
+```
+
+Если `STAGE_DB_*` или `STAGE_DB_SCHEMAS` не заданы, stage-раздел пропускается.

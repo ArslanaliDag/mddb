@@ -3,3 +3,4 @@
 .git/
 .vscode/
 database.md
+__pycache__
